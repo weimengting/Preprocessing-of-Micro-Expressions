@@ -22,5 +22,5 @@ numpy
 
 ### Contributions
 
-All contributions are welcomed. If you have any confusions about the code feel free to weimengting@seu.edu.cn.
+All contributions are welcomed. If you have any confusions about the code feel free to contact weimengting@seu.edu.cn.
 
