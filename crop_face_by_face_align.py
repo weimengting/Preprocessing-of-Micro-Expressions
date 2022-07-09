@@ -1,10 +1,19 @@
+"""
+    The main classes in the pipeline, which are used for facial landmarks detection, alignment and cropping, respectively.
+"""
+
+
 import face_alignment
 import cv2
 from skimage import io
 import numpy as np
 from math import *
 
+
 class preprocess_landmarks(object):
+    """
+        compute the landmarks for an image
+    """
     def __init__(self):
         self.fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False, device='cuda')
 
@@ -17,7 +26,7 @@ class preprocess_landmarks(object):
 class preprocess_rotate(object):
 
     def eye_angle(self, coordinates):
-    # 利用左右眼各6个landmarks求取图片摆正所需旋转角度
+        # compute the angle to adjust the image, achieved by six landmarks on the left and right eyes
         eyel_x = int(np.round(
             np.mean([coordinates[36][0], coordinates[37][0], coordinates[38][0], coordinates[39][0], coordinates[40][0],
                      coordinates[41][0]])))
@@ -35,15 +44,15 @@ class preprocess_rotate(object):
         return angle
 
     def rotate(self, img, angle, coordinates):
-    # 对图像旋转angle角度，并将landmarks旋转angle角度
+        # rotate the image as well as the landmarks by the angle
         width = img.shape[1]
         height = img.shape[0]
-        heightNew = int(width * fabs(sin(radians(angle))) + height * fabs(cos(radians(angle))))  # 旋转后的高度
-        widthNew = int(height * fabs(sin(radians(angle))) + width * fabs(cos(radians(angle))))  # 旋转后的宽度
-        MatRotation = cv2.getRotationMatrix2D((width // 2, height // 2), angle, 1)  # 旋转矩阵
-        rot_img = cv2.warpAffine(img, MatRotation, (widthNew, heightNew), borderValue=(255, 255, 255))  # 旋转后的图像
+        heightNew = int(width * fabs(sin(radians(angle))) + height * fabs(cos(radians(angle))))  # height after rotation
+        widthNew = int(height * fabs(sin(radians(angle))) + width * fabs(cos(radians(angle))))  # width after rotation
+        MatRotation = cv2.getRotationMatrix2D((width // 2, height // 2), angle, 1)  # rotation matrix
+        rot_img = cv2.warpAffine(img, MatRotation, (widthNew, heightNew), borderValue=(255, 255, 255))  # image after rotation
         rot_coordinates = np.zeros((len(coordinates), 2), dtype='int')
-        # 旋转后的坐标
+        # the coordinates after rotation
         for idx, coordinate in enumerate(coordinates):
             rot_coordinates[idx] = np.reshape(np.dot(MatRotation, np.array([[coordinate[0]], [coordinate[1]], [1]])),
                                               (1, 2))
@@ -52,7 +61,7 @@ class preprocess_rotate(object):
 class preprocess_crop(object):
 
     def crop(self, rot_coordinates, img, margin):
-    # 对旋转后的图像左右下按照landmarks裁剪，上部按margin保留部分额头
+        # crop the rotated image by the new landmarks, and simultaneously, keep some forehead area by the margin
         left, right = np.min(rot_coordinates, axis=0)[0], np.max(rot_coordinates, axis=0)[0]
         top, bottom = np.min(rot_coordinates, axis=0)[1], np.max(rot_coordinates, axis=0)[1]
         kept = top - int((bottom - top) * margin)
@@ -72,13 +81,13 @@ if __name__ == '__main__':
     face_dector = preprocess_landmarks()
     face_rotate = preprocess_rotate()
     face_crop = preprocess_crop()
-    img_path = "F:\datasets\MMEW\MMEW\Micro_Expression\surprise\S29-02-001/1.jpg"
+    img_path = "..../1.jpg"
 
-    coordinates = face_dector.detect(img_path)  # 返回人脸关键点landmarks
-    angle = face_rotate.eye_angle(coordinates)  # 返回人眼测得所需摆正角度
+    coordinates = face_dector.detect(img_path)  # compute landmarks
+    angle = face_rotate.eye_angle(coordinates)  # compute the rotation angle
     img = cv2.imread(img_path)
-    rot_img, rot_coordinates = face_rotate.rotate(img, angle, coordinates)  # 摆正图片及landmarks
-    crop_img = face_crop.crop(rot_coordinates, img, 0.2)  # 裁剪人脸图片
+    rot_img, rot_coordinates = face_rotate.rotate(img, angle, coordinates)  # adjust the image and landmarks
+    crop_img = face_crop.crop(rot_coordinates, img, 0.2)  # crop the facial area
     cv2.imshow("win", crop_img)
     cv2.waitKey(0)
     # print(coordinates[0])

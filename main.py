@@ -1,11 +1,21 @@
+"""
+    The main class for processing a database, i.e. MMEW, by enumerating the root directory.
+    You can rewrite this according to your requirement since the file path and location mode of samples are various.
+    Note that for the same video clip, we only compute the landmarks for the first frame, the remaining frames are aligned and rotated by
+    the landmarks of the first frame. This is because the position of the camera rarely changes in the same video clip.
+
+    Author : Mengting Wei
+"""
+
 from crop_face_by_face_align import *
 import os
 
-'''
-    遍历路径，预处理微表情
-'''
+
 class MicroExpression():
     def __init__(self, margin):
+        '''
+            :param margin: ratio for keeping some facial area
+        '''
         self.margin = margin
         self.face_dector = preprocess_landmarks()
         self.face_rotate = preprocess_rotate()
@@ -27,12 +37,12 @@ class MicroExpression():
                 anchor_img_path = os.path.join(cur_subject_path, anchor_name)
 
                 anchor_img = cv2.imread(anchor_img_path)
-                coordinates = self.face_dector.detect(anchor_img_path)  # 返回人脸关键点landmarks
-                angle = self.face_rotate.eye_angle(coordinates)  # 返回人眼测得所需摆正角度
+                coordinates = self.face_dector.detect(anchor_img_path)
+                angle = self.face_rotate.eye_angle(coordinates)
 
-                rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)  # 摆正图片及landmarks
-                crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)  # 裁剪人脸图片
-                save_root = 'D:\pycharm_projects\pythonProject\local\preprocess_MMEW'
+                rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)
+                crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)
+                save_root = '....\preprocess_MMEW'
                 save_path = os.path.join(save_root, 'MicroExpression', category, subject)
                 if not os.path.exists(save_path):
                     os.makedirs(save_path)
@@ -66,12 +76,12 @@ class MacroExpression():
                 anchor_img_path = os.path.join(cur_category_path, anchor_name)
 
                 anchor_img = cv2.imread(anchor_img_path)
-                coordinates = self.face_dector.detect(anchor_img_path)  # 返回人脸关键点landmarks
-                angle = self.face_rotate.eye_angle(coordinates)  # 返回人眼测得所需摆正角度
+                coordinates = self.face_dector.detect(anchor_img_path)
+                angle = self.face_rotate.eye_angle(coordinates)
 
-                rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)  # 摆正图片及landmarks
-                crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)  # 裁剪人脸图片
-                save_root = 'D:\pycharm_projects\pythonProject\local\preprocess_MMEW'
+                rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)
+                crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)
+                save_root = '....\preprocess_MMEW'
                 save_path = os.path.join(save_root, 'MacroExpression', subject, category)
                 if not os.path.exists(save_path):
                     os.makedirs(save_path)
@@ -84,44 +94,10 @@ class MacroExpression():
                     cv2.imwrite(os.path.join(save_path, cur_img_name), crop_cur_img)
                     print("done!")
 
-class LiuTest():
-    def __init__(self, margin):
-        self.margin = margin
-        self.face_dector = preprocess_landmarks()
-        self.face_rotate = preprocess_rotate()
-        self.face_crop = preprocess_crop()
 
-    def glob_path(self, root):
-        subjects = os.listdir(root)
-        for subject in subjects:
-            cur_subject_path = os.path.join(root, subject)
-            imgs = sorted(os.listdir(cur_subject_path))
-
-            anchor_name = imgs[0]
-            print(anchor_name)
-            anchor_img_path = os.path.join(cur_subject_path, anchor_name)
-
-            anchor_img = cv2.imread(anchor_img_path)
-            coordinates = self.face_dector.detect(anchor_img_path)  # 返回人脸关键点landmarks
-            angle = self.face_rotate.eye_angle(coordinates)  # 返回人眼测得所需摆正角度
-
-            rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)  # 摆正图片及landmarks
-            crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)  # 裁剪人脸图片
-            save_root = 'E://wei_cropped//SAMM'
-            save_path = os.path.join(save_root, subject)
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-            cv2.imwrite(os.path.join(save_path, anchor_name), crop_img)
-            for i in range(1, len(imgs)):
-                cur_img_name = imgs[i]
-                cur_img_path = os.path.join(cur_subject_path, cur_img_name)
-                cur_img = cv2.imread(cur_img_path)
-                crop_cur_img = self.face_crop.crop(rot_coordinates, cur_img, self.margin)
-                cv2.imwrite(os.path.join(save_path, cur_img_name), crop_cur_img)
-                print("done!")
 
 
 
 if __name__ == '__main__':
-    ME = LiuTest(margin=0.2)
-    ME.glob_path(root='E://SAMM_Test_cropped')
+    ME = MicroExpression(margin=0.2)
+    ME.glob_path(root='..')
