@@ -1,0 +1,27 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="14">
+            <item index="0" class="java.lang.String" itemvalue="gast-0.3.3" />
+            <item index="1" class="java.lang.String" itemvalue="ops" />
+            <item index="2" class="java.lang.String" itemvalue="ipdb" />
+            <item index="3" class="java.lang.String" itemvalue="pytorchviz" />
+            <item index="4" class="java.lang.String" itemvalue="torch" />
+            <item index="5" class="java.lang.String" itemvalue="skimage" />
+            <item index="6" class="java.lang.String" itemvalue="xdoctest" />
+            <item index="7" class="java.lang.String" itemvalue="tensorboardX" />
+            <item index="8" class="java.lang.String" itemvalue="torchvision" />
+            <item index="9" class="java.lang.String" itemvalue="Keras-Preprocessing" />
+            <item index="10" class="java.lang.String" itemvalue="tensorflow" />
+            <item index="11" class="java.lang.String" itemvalue="tensorflow-estimator" />
+            <item index="12" class="java.lang.String" itemvalue="tensorboard" />
+            <item index="13" class="java.lang.String" itemvalue="gast" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
