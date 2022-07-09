@@ -9,7 +9,7 @@ from skimage import io
 fa = face_alignment.FaceAlignment(face_alignment.LandmarksType._2D, flip_input=False, device='cuda')
 
 def enumerate_path():
-    test_img = "..../1.jpg"
+    test_img = "D:\pycharm_projects\pythonProject\local\preprocess_MMEW/figs\original.jpg"
     # output the landmarks matrix with shape=(68, 2)
     input = io.imread(test_img)
     preds = fa.get_landmarks(input)
