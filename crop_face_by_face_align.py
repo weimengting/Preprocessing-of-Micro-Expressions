@@ -87,7 +87,7 @@ if __name__ == '__main__':
     angle = face_rotate.eye_angle(coordinates)  # compute the rotation angle
     img = cv2.imread(img_path)
     rot_img, rot_coordinates = face_rotate.rotate(img, angle, coordinates)  # adjust the image and landmarks
-    crop_img = face_crop.crop(rot_coordinates, img, 0.2)  # crop the facial area
+    crop_img = face_crop.crop(rot_coordinates, rot_img, 0.2)  # crop the facial area
     cv2.imshow("win", crop_img)
     cv2.waitKey(0)
     # print(coordinates[0])

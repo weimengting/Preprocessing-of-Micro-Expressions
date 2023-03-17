@@ -80,7 +80,7 @@ class MacroExpression():
                 angle = self.face_rotate.eye_angle(coordinates)
 
                 rot_img, rot_coordinates = self.face_rotate.rotate(anchor_img, angle, coordinates)
-                crop_img = self.face_crop.crop(rot_coordinates, anchor_img, self.margin)
+                crop_img = self.face_crop.crop(rot_coordinates, rot_img, self.margin)
                 save_root = '....\preprocess_MMEW'
                 save_path = os.path.join(save_root, 'MacroExpression', subject, category)
                 if not os.path.exists(save_path):
@@ -90,7 +90,8 @@ class MacroExpression():
                     cur_img_name = imgs[i]
                     cur_img_path = os.path.join(cur_category_path, cur_img_name)
                     cur_img = cv2.imread(cur_img_path)
-                    crop_cur_img = self.face_crop.crop(rot_coordinates, cur_img, self.margin)
+                    cur_rot_img, cur_rot_coordinates = self.face_rotate.rotate(cur_img, angle, coordinates)
+                    crop_cur_img = self.face_crop.crop(cur_rot_coordinates, cur_rot_img, self.margin)
                     cv2.imwrite(os.path.join(save_path, cur_img_name), crop_cur_img)
                     print("done!")
 
